@@ -25,12 +25,21 @@ data:
         Parser         docker
         DB             /run/fluent-bit/flb_kube.db
         Mem_Buf_Limit  5MB
+        {{- range $key,$value := .Values.config.extraTailConfig }}
+        {{ $key }}     {{ $value}}
+        {{- end }}
     [FILTER]
         Name           kubernetes
         Match          kube.*
         Kube_URL       https://kubernetes.default.svc:443
         Merge_Log On
         K8S-Logging.Parser {{ .Values.config.k8sLoggingParser }}
+    {{- range $extraFilter := .Values.config.extraFilters }}
+    [FILTER]
+    {{- range $key,$value := $extraFilter }}
+        {{ $key }} {{ $value }}
+    {{- end }}
+    {{- end }}
     [Output]
         Name loki
         Match *
@@ -68,5 +77,8 @@ data:
     {{- end }}
 
   labelmap.json: |-
+    {{- if .Values.config.customLabelMap }}
+    {{- .Values.config.customLabelMap | toPrettyJson | nindent 4}}
+    {{- else }}
     {{- .Values.config.labelMap | toPrettyJson | nindent 4}}
-
+    {{- end }}

@@ -29,6 +29,10 @@ config:
       container_name: container
       pod_name: instance
     stream: stream
+  customLabelMap: {}
+  # extraTailConfig: # Allow to define custom tail config
+  #   Refresh_Interval: '60'
+  #   Exclude_Path:   '["/var/log/containers/loki-fluent-bit*"]'
   # parsers: # Allow to define custom parsers. The key here is the same as the one in the [PARSER] section of parsers.conf file.
   #  - Name: json
   #    Format: json
@@ -39,6 +43,12 @@ config:
   #   - Name: stdout
   #     Format: json
   #     json_date_format: time
+  # extraFilters: # Allow to define extra outputs in addition to the one automatically created
+  #   - Name: nest
+  #     Match: kube.*
+  #     Operation: lift
+  #     Nested_under kubernetes
+  #     Add_prefix kube_
 
 affinity: {}
 
